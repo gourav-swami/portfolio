@@ -172,10 +172,9 @@ footer{border-top:1px solid var(--border);padding:26px 0}
   .cursor-dot,.cursor-ring{display:none}
 }
 
-/* ===== Hero name hover-move effect ===== */
-.hero-name .letter{display:inline-block;transition:transform .3s cubic-bezier(.2,.8,.2,1);will-change:transform}
-.hero-name:hover .letter{animation:letterWave .5s ease}
-@keyframes letterWave{0%{transform:translateY(0)}40%{transform:translateY(-10px) rotate(4deg)}100%{transform:translateY(0)}}
+/* ===== Hero name hover-move effect (butter-smooth via rAF lerp) ===== */
+.hero-name .letter{display:inline-block;will-change:transform;transition:none}
+.hero-name .name-line{display:inline-block;white-space:nowrap}
 
 /* reveal */
 .reveal{opacity:0;transform:translateY(18px);transition:.6s}

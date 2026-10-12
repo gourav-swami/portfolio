@@ -183,40 +183,66 @@ function initCustomCursor(){
     el.addEventListener("mouseleave", ()=> ring.classList.remove("is-hover"));
   });
 
-  // ---- Naam par hover = cursor react + letters move ----
+  // ---- Naam par hover = cursor react + letters smooth magnetic move ----
   if(heroName){
-    // har letter ko alag span me todo taaki wave/magnetic ho sake
+    // har letter ko alag span me todo taaki smooth magnetic ho sake
     heroName.innerHTML = heroName.innerHTML.split("<br>").map(part=>{
       const tmp = document.createElement("div");
       tmp.innerHTML = part;
       const text = tmp.textContent;
       const accent = part.includes("accent");
-      const letters = [...text].map((ch,i)=>`<span class="letter" style="animation-delay:${i*35}ms;${accent?"color:var(--accent)":""}">${ch===" "?"&nbsp;":esc(ch)}</span>`).join("");
+      const letters = [...text].map((ch)=>`<span class="letter"${accent?` style="color:var(--accent)"`:""}>${ch===" "?"&nbsp;":esc(ch)}</span>`).join("");
       return `<span class="name-line">${letters}</span>`;
     }).join("<br>");
 
-    const letters = heroName.querySelectorAll(".letter");
-    heroName.addEventListener("mouseenter", ()=> ring.classList.add("is-name-hover"));
+    const letterEls = [...heroName.querySelectorAll(".letter")];
+    // har letter ke liye smooth state: current + target
+    const L = letterEls.map(el=>({el, cx:0, cy:0, x:0, y:0, tx:0, ty:0}));
+    const RADIUS = 110, MAX = 16, EASE = 0.14;
+
+    const measure = ()=>{
+      L.forEach(o=>{
+        const r = o.el.getBoundingClientRect();
+        o.cx = r.left + r.width/2; o.cy = r.top + r.height/2;
+      });
+    };
+    measure();
+    addEventListener("resize", measure);
+    addEventListener("scroll", measure, {passive:true});
+
+    heroName.addEventListener("mouseenter", ()=>{
+      ring.classList.add("is-name-hover");
+      measure();
+    });
     heroName.addEventListener("mouseleave", ()=>{
       ring.classList.remove("is-name-hover");
-      letters.forEach(l=>{ l.style.transform = ""; });
+      L.forEach(o=>{ o.tx = 0; o.ty = 0; });
     });
-    // magnetic: mouse ke paas wale letters thoda door bhaagte hain
+    // sirf target set karo yahan — actual move rAF loop me smooth hoga
     heroName.addEventListener("mousemove", (e)=>{
-      letters.forEach(l=>{
-        const r = l.getBoundingClientRect();
-        const cx = r.left + r.width/2, cy = r.top + r.height/2;
-        const dx = cx - e.clientX, dy = cy - e.clientY;
+      L.forEach(o=>{
+        const dx = o.cx - e.clientX, dy = o.cy - e.clientY;
         const dist = Math.hypot(dx,dy) || 1;
-        const radius = 90;
-        if(dist < radius){
-          const force = (radius - dist) / radius; // 0..1
-          l.style.transform = `translate(${(-dx/dist*force*-18).toFixed(1)}px, ${(-dy/dist*force*-18).toFixed(1)}px)`;
-        } else {
-          l.style.transform = "";
-        }
+        if(dist < RADIUS){
+          const t = 1 - dist/RADIUS;          // 0..1
+          const force = t*t*(3-2*t);          // smoothstep = no jhatka
+          o.tx = (dx/dist)*force*MAX;
+          o.ty = (dy/dist)*force*MAX;
+        } else { o.tx = 0; o.ty = 0; }
       });
     });
+
+    // cursor wale loop me letters ko bhi lerp karo — butter smooth
+    (function smoothLetters(){
+      L.forEach(o=>{
+        o.x += (o.tx - o.x) * EASE;
+        o.y += (o.ty - o.y) * EASE;
+        if(Math.abs(o.x) < 0.05) o.x = 0;
+        if(Math.abs(o.y) < 0.05) o.y = 0;
+        o.el.style.transform = (o.x === 0 && o.y === 0) ? "" : `translate3d(${o.x.toFixed(2)}px,${o.y.toFixed(2)}px,0)`;
+      });
+      requestAnimationFrame(smoothLetters);
+    })();
   }
 }
 
