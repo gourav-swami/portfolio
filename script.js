@@ -246,6 +246,26 @@ function initCustomCursor(){
   }
 }
 
+// nav glass on scroll + scroll progress (rAF-throttled)
+function initScrollGlass(){
+  const nav = document.getElementById("nav");
+  const bar = document.getElementById("scrollProgress");
+  let ticking = false;
+  const update = ()=>{
+    ticking = false;
+    const y = scrollY;
+    if(nav) nav.classList.toggle("scrolled", y > 24);
+    if(bar){
+      const h = document.documentElement.scrollHeight - innerHeight;
+      bar.style.width = (h > 0 ? (y/h)*100 : 0) + "%";
+    }
+  };
+  addEventListener("scroll", ()=>{
+    if(!ticking){ ticking = true; requestAnimationFrame(update); }
+  }, {passive:true});
+  update();
+}
+
 // nav + reveal + form
 function observeReveals(){
   const els = document.querySelectorAll(".reveal:not(.visible)");
@@ -256,6 +276,7 @@ function observeReveals(){
 document.addEventListener("DOMContentLoaded", ()=>{
   document.getElementById("year").textContent = new Date().getFullYear();
   initCustomCursor();
+  initScrollGlass();
   loadGitHub();
   bindMagicCards();
   typeLoop(document.getElementById("typing"), ["Full-Stack Developer","Java · Python · C++ · JS/TS","DSA Learner","AI Tools Builder"]);
