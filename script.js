@@ -145,6 +145,81 @@ function bindMagicCards(scope=document){
   });
 }
 
+// Custom cursor: dot (instant) + ring (smooth lag) + name magnetic hover
+function initCustomCursor(){
+  const dot = document.getElementById("cursorDot");
+  const ring = document.getElementById("cursorRing");
+  const heroName = document.getElementById("heroName");
+  if(!dot || !ring) return;
+  const fine = window.matchMedia("(hover:hover) and (pointer:fine)").matches;
+  const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  if(!fine || reduced){ dot.style.display = "none"; ring.style.display = "none"; return; }
+
+  let mx = innerWidth/2, my = innerHeight/2, rx = mx, ry = my;
+  let shown = false;
+  dot.style.opacity = "0"; ring.style.opacity = "0";
+
+  addEventListener("mousemove", (e)=>{
+    mx = e.clientX; my = e.clientY;
+    dot.style.left = mx+"px"; dot.style.top = my+"px";
+    if(!shown){ shown = true; dot.style.opacity = "1"; ring.style.opacity = "1"; }
+  }, {passive:true});
+  document.addEventListener("mouseleave", ()=>{ dot.style.opacity = "0"; ring.style.opacity = "0"; shown = false; });
+  document.addEventListener("mouseenter", ()=>{ dot.style.opacity = "1"; ring.style.opacity = "1"; shown = true; });
+
+  (function loop(){
+    rx += (mx - rx) * 0.16;
+    ry += (my - ry) * 0.16;
+    ring.style.left = rx+"px"; ring.style.top = ry+"px";
+    requestAnimationFrame(loop);
+  })();
+
+  addEventListener("mousedown", ()=>{ dot.classList.add("is-down"); ring.classList.add("is-down"); });
+  addEventListener("mouseup", ()=>{ dot.classList.remove("is-down"); ring.classList.remove("is-down"); });
+
+  // ring bada karo jab links / buttons / cards par hover ho
+  document.querySelectorAll("a, button, .card, input, textarea").forEach(el=>{
+    el.addEventListener("mouseenter", ()=> ring.classList.add("is-hover"));
+    el.addEventListener("mouseleave", ()=> ring.classList.remove("is-hover"));
+  });
+
+  // ---- Naam par hover = cursor react + letters move ----
+  if(heroName){
+    // har letter ko alag span me todo taaki wave/magnetic ho sake
+    heroName.innerHTML = heroName.innerHTML.split("<br>").map(part=>{
+      const tmp = document.createElement("div");
+      tmp.innerHTML = part;
+      const text = tmp.textContent;
+      const accent = part.includes("accent");
+      const letters = [...text].map((ch,i)=>`<span class="letter" style="animation-delay:${i*35}ms;${accent?"color:var(--accent)":""}">${ch===" "?"&nbsp;":esc(ch)}</span>`).join("");
+      return `<span class="name-line">${letters}</span>`;
+    }).join("<br>");
+
+    const letters = heroName.querySelectorAll(".letter");
+    heroName.addEventListener("mouseenter", ()=> ring.classList.add("is-name-hover"));
+    heroName.addEventListener("mouseleave", ()=>{
+      ring.classList.remove("is-name-hover");
+      letters.forEach(l=>{ l.style.transform = ""; });
+    });
+    // magnetic: mouse ke paas wale letters thoda door bhaagte hain
+    heroName.addEventListener("mousemove", (e)=>{
+      letters.forEach(l=>{
+        const r = l.getBoundingClientRect();
+        const cx = r.left + r.width/2, cy = r.top + r.height/2;
+        const dx = cx - e.clientX, dy = cy - e.clientY;
+        const dist = Math.hypot(dx,dy) || 1;
+        const radius = 90;
+        if(dist < radius){
+          const force = (radius - dist) / radius; // 0..1
+          l.style.transform = `translate(${(-dx/dist*force*-18).toFixed(1)}px, ${(-dy/dist*force*-18).toFixed(1)}px)`;
+        } else {
+          l.style.transform = "";
+        }
+      });
+    });
+  }
+}
+
 // nav + reveal + form
 function observeReveals(){
   const els = document.querySelectorAll(".reveal:not(.visible)");
@@ -154,6 +229,7 @@ function observeReveals(){
 
 document.addEventListener("DOMContentLoaded", ()=>{
   document.getElementById("year").textContent = new Date().getFullYear();
+  initCustomCursor();
   loadGitHub();
   bindMagicCards();
   typeLoop(document.getElementById("typing"), ["Full-Stack Developer","Java · Python · C++ · JS/TS","DSA Learner","AI Tools Builder"]);

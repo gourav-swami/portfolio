@@ -10,6 +10,8 @@
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 </head>
 <body>
+<div class="cursor-dot" id="cursorDot" aria-hidden="true"></div>
+<div class="cursor-ring" id="cursorRing" aria-hidden="true"></div>
 
 <nav class="nav" id="nav">
   <div class="nav-inner">
@@ -35,7 +37,7 @@
     <div>
       <div class="badge">● Available for Opportunities</div>
       <p class="hero-sub">Student · India · <span id="typing"></span><span class="caret">|</span></p>
-      <h1>Gaurav<br><span class="accent">Swami</span></h1>
+      <h1 class="hero-name" id="heroName">Gaurav<br><span class="accent">Swami</span></h1>
       <p class="hero-desc">Software developer building full-stack apps, DSA in C++/Java, and AI-powered tools. I learn by shipping — check my work live from GitHub below.</p>
       <div class="hero-btns">
         <a href="#projects" class="btn btn-primary">View Projects ↓</a>

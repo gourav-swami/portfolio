@@ -154,6 +154,29 @@ footer{border-top:1px solid var(--border);padding:26px 0}
   .card::before{opacity:.35}
 }
 
+/* ===== Custom cursor: dot in center + ring around ===== */
+.cursor-dot,.cursor-ring{position:fixed;top:0;left:0;pointer-events:none;z-index:9999;border-radius:50%;transform:translate(-50%,-50%)}
+.cursor-dot{width:8px;height:8px;background:var(--accent);box-shadow:0 0 12px rgba(0,230,118,.8)}
+.cursor-ring{width:38px;height:38px;border:1.5px solid rgba(0,230,118,.7);transition:width .25s,height .25s,background-color .25s,border-color .25s;display:flex;align-items:center;justify-content:center}
+.cursor-ring.is-hover{width:58px;height:58px;background:rgba(0,230,118,.08);border-color:var(--accent)}
+.cursor-ring.is-name-hover{width:74px;height:74px;background:rgba(0,230,118,.12);border-color:var(--accent);box-shadow:0 0 30px rgba(0,230,118,.25)}
+.cursor-dot.is-down{transform:translate(-50%,-50%) scale(.6)}
+.cursor-ring.is-down{width:28px;height:28px}
+@media (hover:hover) and (pointer:fine){
+  body,a,button,.btn,.socials a,.proj h3 a,.proj-links a,.contact-row{cursor:none}
+}
+@media (hover:none),(pointer:coarse){
+  .cursor-dot,.cursor-ring{display:none}
+}
+@media (prefers-reduced-motion:reduce){
+  .cursor-dot,.cursor-ring{display:none}
+}
+
+/* ===== Hero name hover-move effect ===== */
+.hero-name .letter{display:inline-block;transition:transform .3s cubic-bezier(.2,.8,.2,1);will-change:transform}
+.hero-name:hover .letter{animation:letterWave .5s ease}
+@keyframes letterWave{0%{transform:translateY(0)}40%{transform:translateY(-10px) rotate(4deg)}100%{transform:translateY(0)}}
+
 /* reveal */
 .reveal{opacity:0;transform:translateY(18px);transition:.6s}
 .reveal.visible{opacity:1;transform:none}
