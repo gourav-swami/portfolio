@@ -208,6 +208,52 @@ footer{border-top:1px solid var(--border);padding:26px 0}
 .hero-name .letter{display:inline-block;will-change:transform;transition:none}
 .hero-name .name-line{display:inline-block;white-space:nowrap}
 
+/* ===== Hover color effects — sab jagah glow ===== */
+::selection{background:rgba(0,230,118,.35);color:#fff}
+/* nav links: green glow + underline slide */
+.nav-links a{position:relative;transition:color .25s,text-shadow .25s}
+.nav-links a::after{content:"";position:absolute;left:0;bottom:-4px;height:2px;width:0;border-radius:2px;
+  background:linear-gradient(90deg,var(--accent),var(--accent2));transition:width .3s ease}
+.nav-links a:hover{color:var(--accent);text-shadow:0 0 14px rgba(0,230,118,.6)}
+.nav-links a:hover::after{width:100%}
+.logo{transition:text-shadow .25s}
+.logo:hover{text-shadow:0 0 18px rgba(0,230,118,.55)}
+/* buttons: deep glow */
+.btn{transition:transform .2s,box-shadow .25s,border-color .25s,color .25s,background .25s}
+.btn-primary:hover{box-shadow:0 8px 30px rgba(0,230,118,.45),0 0 0 1px rgba(0,230,118,.5);filter:brightness(1.08)}
+.btn-ghost:hover{box-shadow:0 0 18px rgba(0,230,118,.25),inset 0 0 12px rgba(0,230,118,.08)}
+/* cards: accent edge + glow */
+.card{transition:transform .18s ease-out,border-color .25s,box-shadow .25s}
+.card:hover{border-color:rgba(0,230,118,.4);
+  box-shadow:0 12px 40px rgba(0,0,0,.5),0 0 24px rgba(0,230,118,.12),inset 0 1px 0 rgba(255,255,255,.1)}
+/* pills / tags: fill glow */
+.tags span,.proj-tags span{transition:.25s}
+.tags span:hover,.proj-tags span:hover{color:#04120a;background:var(--accent);border-color:var(--accent);
+  box-shadow:0 0 14px rgba(0,230,118,.5)}
+/* socials: lift + glow */
+.socials a{transition:.25s}
+.socials a:hover{transform:translateY(-3px);box-shadow:0 8px 22px rgba(0,230,118,.22);color:var(--accent)}
+/* project titles: gradient text */
+.proj h3 a{transition:.25s}
+.proj h3 a:hover{background:linear-gradient(90deg,var(--accent),#5eead4,var(--accent2));
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+  filter:drop-shadow(0 0 10px rgba(0,230,118,.4))}
+.proj-links a{transition:.25s}
+.proj-links a:hover{box-shadow:0 0 14px rgba(0,230,118,.3);transform:translateY(-2px)}
+/* contact rows + footer */
+.contact-row{transition:.25s}
+.contact-row:hover{border-color:rgba(0,230,118,.5);box-shadow:0 0 18px rgba(0,230,118,.15);transform:translateX(4px)}
+.foot a{transition:.25s}
+.foot a:hover{color:var(--accent);text-shadow:0 0 12px rgba(0,230,118,.55)}
+/* skills bars: glow shimmer */
+.bar .track div{transition:.25s}
+.bar:hover .track div{box-shadow:0 0 12px rgba(0,230,118,.7);filter:brightness(1.15)}
+.bar:hover span{color:var(--accent)}
+/* section headings: subtle glow on hover */
+h2:hover .accent,.hero-name:hover{text-shadow:0 0 30px rgba(0,230,118,.35)}
+.badge{transition:.25s}
+.badge:hover{box-shadow:0 0 18px rgba(0,230,118,.35);background:rgba(0,230,118,.08)}
+
 /* reveal */
 .reveal{opacity:0;transform:translateY(18px);transition:.6s}
 .reveal.visible{opacity:1;transform:none}
